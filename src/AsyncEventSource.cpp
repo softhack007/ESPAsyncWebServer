@@ -185,8 +185,12 @@ void AsyncEventSourceClient::_queueMessage(AsyncEventSourceMessage *dataMessage)
     return;
   }
   if(_messageQueue.length() >= SSE_MAX_QUEUED_MESSAGES){
+#if defined(ESP_IDF_VERSION) && ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+      log_e("ERROR: Too many messages queued\n");
+#else
       ets_printf("ERROR: Too many messages queued\n");
-      delete dataMessage;
+#endif
+    delete dataMessage;
   } else {
       _messageQueue.add(dataMessage);
   }
